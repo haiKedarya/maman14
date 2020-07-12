@@ -1,0 +1,90 @@
+#define DOT 46
+#define MAX_LINE 80
+typedef struct FilesObj{ 
+	File source;/*creation of file reading*/
+	File obj;/*creation of 3 pointers to file printing*/
+	File ext;
+	File entry;	
+    };
+typedef struct mila{ 
+	char opCode[6];
+	char sourceMiun[2];
+	char sourceRegister[3];
+	char destinationMiun[2];
+	char destinationRegister[3];
+	char funct[5];
+	char Are[3];
+    };
+
+int main(int argc, char *argv[]){
+    printf("\nmain");
+    FilesObj files ;
+    FILE *fp1, *fp2, *fp3;/*creation of 3 pointers to file printing*/
+    FILE *fr;/*creation of file reading*/
+    char *fileName;
+    if( argc == 1  || argc == 0) {/*we dont have any file names*/
+      printf("at least one argument expected.\n");
+      return 0;
+    }else if(argc == 2){/*we have only 1 file name*/
+	fileName = checkCommandLineInput(2, *argv[]);
+        assignAddressOfFiles(files, fileName);
+    }else{/*we have more then 1 file name*/
+    	for(int i = 2; i < argc; i++){
+	    fileName = checkCommandLineInput(i, *argv[]);/*here the loop will run on each file*/
+	    assignAddressOfFiles(files, fileName);
+	}
+    }    
+}
+
+/* 
+ * @description this method assigninig values to the files in FilesObj
+ * @param files of type FilesObj contain the files
+ * @param fileName contain the file name that we need to open and create
+ */
+void assignAddressOfFiles(FilesObj files, char[] fileName){
+    if(!(files.source = fopen(fileName + ".as","r"))){
+	fprintf(stderr, "cant open the file:" %s "\n", fileName);
+        exit(0);
+    }
+    file.obj = fopen(fileName + ".obj", "w"); 
+}
+/* 
+ * @description this method check the command line argument if the argument is legal the method will return the location of '.' in argv so we can extract the file name if the argument is not legal the method will return 0 
+ *param location locates us to the string that contains the file name(in case we have several files)
+ *param *argv[] contain the command line arguments from main
+*/
+char *checkCommandLineInput(int location, char *argv[]){
+    printf("check input");
+    int i = 0;
+    
+    while(i < strlen(argv[location])){
+	if(*argv[location][i] == DOT){
+	    break;/*so we save the location of '.'  in i*/
+	}
+	i++;
+    }
+    char *str = (char*) malloc(10*sizeof(char)); 
+    memcpy(str, argv[location], i);
+    return str;
+}
+/* 
+ * @description this method run on the entire file.as and sends every time a whole line(maximum of 80 chars) to some check methods
+ *param file is an indicator to file.as
+*/ 
+int startRunOnFile(File file){
+    char *arr = (char*) calloc(MAX_LINE,sizeof(char));  
+    while(1){
+	if( feof(fp) ) { 
+         break ;
+         }
+         fgets(input,MAX_LINE,file);
+         if(*arr == ';'){/*its a comment line*/
+	    continue;
+	 }
+	 /*call here to the other functions*/
+    }
+}
+    
+
+
+}
