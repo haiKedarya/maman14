@@ -6,9 +6,8 @@ char p=0;
 char x;
 int i;
 int j;
-char userInput1[100];
-char userInput2[100];
-char userInput3[100];
+char userInput1[80];
+char userInput2[80];
 int err =0;
 int numOfComas=0;
 int numOfWords=0;
@@ -23,7 +22,7 @@ char param2[100];
 line line1;
 
 int main(){
-char test[80] = "mov r1";
+char test[80] = "mov r1,";
 firstPart(test);
 return 0;
 }
@@ -83,7 +82,7 @@ for(i; p != ','; i++){
             }
 
 
-/**
+
 
             printf("\nuserInput1:\n");
 for(i = 0; i < 80; i++){
@@ -97,7 +96,7 @@ for(i = 0; i < 80; i++){
             printf("%c",userInput2[i]);
 
             }
-            
+            /**
                           printf("\nuserInput3:\n");
             for(i = 0; i < 80; i++){
             
