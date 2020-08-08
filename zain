@@ -1,9 +1,0 @@
-typedef struct mila{ 
-	char opCode[6];
-	char sourceMiun[2];
-	char sourceRegister[3];
-	char destinationMiun[2];
-	char destinationRegister[3];
-	char funct[5];
-	char Are[3];
-    };
