@@ -5,9 +5,9 @@
 void firstParse(FILE * fp)
 {
 
-shead = (SNode *) malloc(sizeof(SNode));
+shead = (SignNode *) malloc(sizeof(SignNode));
 curSNode = shead;
-dhead = (DNode *) malloc(sizeof(DNode));
+dhead = (DataNode *) malloc(sizeof(DataNode));
 curDNode = dhead;
 
 char * line = NULL;
