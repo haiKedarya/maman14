@@ -26,10 +26,10 @@ typedef struct{
 typedef struct SNode {
     Sign sign;
     struct SNode * next;
-}SNode;
+}SignNode;
 
-SNode * shead ;
-SNode * curSNode;
+SignNode * shead ;
+SignNode * curSNode;
 
 
 typedef union Data{
@@ -42,10 +42,10 @@ typedef union Data{
 typedef struct DNode {
     Data data;
     struct DNode* next;
-}DNode;
+}DataNode;
 
-DNode* dhead;
-SNode* curDNode;
+DataNode* dhead;
+DataNode* curDNode;
 
 
 void printData(){
