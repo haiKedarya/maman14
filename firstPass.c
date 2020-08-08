@@ -5,9 +5,9 @@
 void firstParse(FILE * fp)
 {
 
-shead = (SignNode *) malloc(sizeof(SignNode));
+shead = (SNode *) malloc(sizeof(SNode));
 curSNode = shead;
-dhead = (DataNode *) malloc(sizeof(DataNode));
+dhead = (DNode *) malloc(sizeof(DNode));
 curDNode = dhead;
 
 char * line = NULL;
@@ -17,21 +17,25 @@ ssize_t read;
 
 
 while ((read = getline(&line, &len, fp)) != -1) {
-
+puts(line);
 int flagForError = 0;
 int place=0;
 char * ptr = line;
 int labelFlag=0;          
 
-while(1){ 
-   /*if the input end*/        
-if(*ptr == NULL){ break; }
-
-while(*ptr == ' ')
+while(*ptr == ' ')/*clear spaces before line*/
 {
 	ptr++;
 	place++;
 }
+
+
+while(1){ /*THE SCAN LOOP*/
+   
+   /*if the input end*/        
+	if(*ptr == NULL){ break; }
+
+
 
 
 if(*ptr == ':')
@@ -48,13 +52,11 @@ if(*ptr == ':')
 	
 if(*ptr == '.')
 { 
-
-
 switch(checkForGuide(line,place)){
 
 	case 1: {
 	if(labelFlag){
-	        addSign(label, "data", DC);
+	        addSign(label, "data", IC);
 	        }
 		}
 	break;
@@ -63,7 +65,7 @@ switch(checkForGuide(line,place)){
 	case 2: {
 		addString(line,place);
 			if(labelFlag){
-			addSign(label, "string", DC);
+			addSign(label, "data", IC);
 			}
 		}
 	break;
@@ -88,8 +90,7 @@ switch(checkForGuide(line,place)){
 }
 }
 
-
-
+/*moving ptr to next char in line*/
 place++;
 ptr++;
 
@@ -97,17 +98,16 @@ ptr++;
 
 printf("%d\n",IC);
 IC++;
-
+/*moving to next line IC grow by 1*/
 
 }
 }
 /*=================================================*/
 bool checkForLabel(char * line[]){
+/*funtion for cheking if label have no errors*/
 char * ptr1 = line;
 int i=0;
 int error=0;
-
-
 
 while(*ptr1 == ' ')
 {
@@ -151,7 +151,7 @@ return 1;
 
 /*=================================================*/
 int checkForGuide(char * line[],int place){
-   
+   /*function check if it .string/.data/.external/.entry,and if it is illigel input, return 0*/
 char * ptr1 = line;
 ptr1 = ptr1 + place + 1 ;
 int i=0;
@@ -224,8 +224,21 @@ addSign(externy, "external", 0);
 /*=================================================*/
 void addString(line,place){
 static int i=0;
+char * p;
 int len = 0;
 char * ptr3 = line;
+int numOfP=0;
+/*check if the is two "X" if not, error and return */
+for(p=line;*p!=NULL;p++){
+	if(*p == '"'){
+	numOfP++;
+	}
+}
+
+if(numOfP!=2){
+printf("ERROR: must be 2 quotation marks. you insert: %d quotation marks.\n",numOfP); 
+return;
+}
 
 while(*ptr3 != '.')
 {
@@ -237,14 +250,14 @@ while(*ptr3 != '"')
 	ptr3++;
 	
 }
-
+	
+	
 ptr3++;
 
 while(*ptr3!='"'){
-
+/*first is type of int24. can found in words.h file */
 first = *ptr3;
 arr24[i] = first;
-printf("ascii code: %d\n",arr24[i]);
 makeBinary(arr24[i]);
 printf("\n");
 ptr3++;
@@ -256,10 +269,8 @@ len++;
 i++;
 arr24[i] = '\0';
 i++;
-len++;
 
-printf("%d\n",len);
-DC+=len-1;
+DC+=len+2;
 printf("dc:%d\n",DC);
 return;
 
@@ -267,7 +278,7 @@ return;
 
 /*=================================================*/
 void addSign(char label[50], char character[50], int value) {
-
+/*send values for symbol table*/
     strcpy(curSNode->sign.label, label);
     curSNode->sign.value = (value);
     strcpy(curSNode->sign.car, character);
