@@ -44,7 +44,7 @@ if(*ptr == ':')
 	if(checkForLabel(line))
 	{
 	printf("labelFlag IS ON\n");
-	}else{
+	}else{/*if we got : and we get false from funtion their is a problem and break*/
 		break; 
 	}
 	
