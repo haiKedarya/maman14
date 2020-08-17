@@ -5,7 +5,7 @@
  int DC = 0;
  
  int flagForError = 0;
-
+myRegister registers[8];
 
 void firstParse(FILE * fp)
 {
@@ -14,7 +14,7 @@ shead = (SignNode *) malloc(sizeof(SignNode));
 curSNode = shead;
 dhead = (DataNode *) malloc(sizeof(DataNode));
 curDNode = dhead;
-
+int parametersCheck;
 char * line = NULL;
 size_t len = 0;
 ssize_t read;
@@ -27,7 +27,7 @@ char functLabel;  /*for each line indicates the function number(if no function n
 preMila pre_Mila;
 mila lineMila;
 while ((read = getline(&line, &len, fp)) != -1) {/*get lines*/
-
+resetValues(&pre_Mila, &lineMila);/*resets the the mila values*/
 ptr = line;
 puts(line);
 labelFlag = 0;
@@ -42,7 +42,9 @@ while(*ptr == ' ')/*clear spaces before line*/
 
 while(1){ /*THE SCAN LOOP*/
    /*if the input end*/        
-	if(*ptr == '\0'){ break; }
+if(*ptr == '\0'){ 	
+	break; 
+}
 
 if(*ptr == ':')
 { 
@@ -50,7 +52,7 @@ if(*ptr == ':')
 	if(labelFlag)
 	{
 	pre_Mila.has_label = 1;
-	printf("labelFlag IS ON\n");
+	/*printf("labelFlag IS ON\n");*/
 	}else{/*if we got : and we get false from funtion their is a problem and break*/
 		break; 
 	}
@@ -83,12 +85,12 @@ switch(checkForGuide(line,place)){
 	
 	
 	case 3: {
-		printf("ITS .ENTRY");
+		/*printf("ITS .ENTRY");*/
 		}
 	break;
 	
 	case 4: {
-		printf("THE EXTERN: ");
+		/*printf("THE EXTERN: ");*/
 		handleExtern(line,place);
 		}
 	break;
@@ -105,8 +107,10 @@ switch(checkForGuide(line,place)){
 if(!functLabel){
 	if(isalpha(*ptr)){
 
-		functLabel = checkFunct(ptr);/*will return the funct number 1-16 if found any*/		
+		functLabel = checkFunct(ptr);/*will return the funct number 1-16 if found any*/	
+		/*printf("\nthis is functLabel: %d\n", functLabel);*/
 		if(functLabel > 0){
+		pre_Mila.operation = functLabel;
 		ptr+=3;
 		makepOpCodeAndFunct(functLabel-1, &lineMila);
 		}
@@ -132,9 +136,13 @@ IC++;
 if(functLabel > 0){/*start look for parameters*/
 
 	if(!isspace(*ptr)){/*if its not blank space */	
-
-		if(getParameters(ptr, &pre_Mila, &lineMila) > 0){/*go get the parameter values */
-			assignRegistersValues(pre_Mila, &lineMila);
+		parametersCheck = getParameters(ptr, &pre_Mila, &lineMila);
+		/*printf("this is parametersCheck: %d",parametersCheck);*/
+		if(1){/*go get the parameter values */
+			if(parametersCheck > 0){
+				assignRegistersValues(pre_Mila, &lineMila, &registers);
+				/*checkIfParamIsLabel(&pre_Mila, &lineMila);*/
+			}
 			break;				
 		}
 	
@@ -147,7 +155,9 @@ place++;
 ptr++;
 
 }	
-/*printMila(&lineMila);*/
+
+printMila(&lineMila);
+
 printf("ic: %d\n",IC);
 place = 0;
 IC++;
@@ -205,8 +215,8 @@ return 1;
 
 /*=================================================*/
 int checkForGuide(char * line,int place){
-printf("start of checkForGuide\n");
-puts(line);
+/*printf("start of checkForGuide\n");
+puts(line);*/
    /*function check if it .string/.data/.external/.entry,and if it is illigel input, return 0*/
 char *ptr1 = line;
 char guide[80];
@@ -292,7 +302,7 @@ printf("%c",*p);
 
 if(numOfP != 2){
 printf("ERROR: must be 2 quotation marks. you insert: %d quotation marks.\n",numOfP); 
-return;
+return 0;
 }
 
 while(*ptr3 != '.' && *ptr3 != '\0')
@@ -399,7 +409,7 @@ return 0;
 /*======================================================*/
 void addSign(char label[50], char character[50], int value) {
 /*send values for symbol table*/
-	printf("start of addSign\n");
+	
     strcpy(curSNode->sign.label, label);
     curSNode->sign.value = (value);
     strcpy(curSNode->sign.car, character);
@@ -407,6 +417,5 @@ void addSign(char label[50], char character[50], int value) {
     SignNode *newSNode = (SignNode *) malloc(sizeof(SignNode));
     curSNode->next = newSNode;
     curSNode = newSNode;
-	printf("end of addSign\n");
 
 }
