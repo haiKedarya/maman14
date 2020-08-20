@@ -18,10 +18,11 @@ void runProg(char * fileName[]);
 void printData();
 void firstParse(FILE * fp);
 void firstParse();
-
+void printEntry();
+void printToCheck();
+	
 char lineInput[1000];
 
 FILE * fp;
 
 #endif //UNTITLED_MAIN_H
-
