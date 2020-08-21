@@ -3,8 +3,44 @@
 char regs [8][3] = {"r0", "r1", "r2", "r3", "r4", "r5", "r6", "r7"}; 
 
 char ops [16][4]={"mov","cmp","add", "sub", "lea","clr", "not", "inc", "dec", "jmp", "bne", "jsr", "red", "prn", "rts", "stop"}; 
+/* 
+ * @description this method called from checkIfParamIsLabel if we have label name in the parameters
+and assigning the proper A_R_E code  
+ *param myMila is a pointer to the given mila that we want to assign 
+ *param pre_mila is a pointer to where we take from the parameters
+ *param numOfParam idicates us witch param is the label to check
+*/ 
+void checkEntryOrExtern(preMila *pre_mila, mila *myMila, int numOfParam){
+bool isEntry = 0;
+/*SignNode *temp;*/
+EntryNode *tmpEntry;
+if (tmpEntry == NULL) {
+	strcpy(myMila->a_r_e,"010");
+	printf("entry List is empty checkEntryOrExtern().\n");
+	return;
+}
+tmpEntry = ehead ;
+while (tmpEntry != NULL) {
+if(numOfParam == 2){
+	if(!strcmp(tmpEntry->entry.label, pre_mila->param1)){
+		isEntry =1;
+		return 1;
+	}
+}else{
+	if(!strcmp(tmpEntry->entry.label, pre_mila->param2)){
+		isEntry =1;
+		return 2;
+	}
+}
+        tmpEntry = tmpEntry->next;
+   }
+if(isEntry){
+	strcpy(myMila->a_r_e,"001");
+}else{
+	strcpy(myMila->a_r_e,"010");
+}
 
-
+}
 /* 
  * @description this method check if there is any label in the parameters 
  *param myMila is a pointer to the given mila that we want to assign 
@@ -18,44 +54,44 @@ s = checkInWitchParamLabel(pre_mila,myMila);
 printf("s: %d \n", s);
 if(s > 0){
 	if(s == 1){
-		if(!pre_mila->param1_miun){
-			pre_mila->param1_miun = MIUN1;
+		if(pre_mila->param1_miun){
+			if(!(pre_mila->param1_miun == MIUN2)){
+				printf("MIhus : %s\n",myMila->sourceMiun);
+				pre_mila->param1_miun = MIUN1;
+				strcpy(myMila->sourceMiun,"01");
+				strcpy(myMila->a_r_e,"100");
+			}else{
+				pre_mila->param1_miun = MIUN2;
+				strcpy(myMila->sourceMiun,"01");
+				checkEntryOrExtern(pre_mila, myMila ,s);
+			}
+		}else{
+			pre_mila->param1_miun = MIUN2;
 			strcpy(myMila->sourceMiun,"01");
+			checkEntryOrExtern(pre_mila, myMila ,s);
 		}
 	}
 	if(s == 2){	
-		if(!pre_mila->param2_miun){	
-			pre_mila->param2_miun = MIUN1;
+		if(!pre_mila->param2_miun){
+			if(!(pre_mila->param2_miun == MIUN2)){
+				pre_mila->param2_miun = MIUN1;
+				strcpy(myMila->destinationMiun,"01");
+				strcpy(myMila->a_r_e,"100");
+			}else{
+				pre_mila->param2_miun = MIUN2;
+				strcpy(myMila->destinationMiun,"01");
+				checkEntryOrExtern(pre_mila, myMila ,s);
+			}
+		}else{
+			pre_mila->param2_miun = MIUN2;
 			strcpy(myMila->destinationMiun,"01");
+			checkEntryOrExtern(pre_mila, myMila ,s);
 		}
 	}
 }else{
 	return 0;
 }
-/*SignNode *temp;
-if (shead == NULL) {
-	printf("List is empty.\n");
-	return 0;
-}
-temp = shead;
-while (temp != NULL) {
-        if(!strcmp(temp->sign.label, pre_mila->param1)){
-		pre_mila->has_label = 1;	
-		pre_mila->param1_miun = 1;
-		strcpy(myMila->sourceMiun,"01");
-		return 1;
-	}
-	if(!strcmp(temp->sign.label, pre_mila->param2)){
-		pre_mila->has_label = 2;
-		printf("ani kan\n");
-		pre_mila->param2_miun = 1;
-		strcpy(myMila->destinationMiun,"01");
-		return 2;
-	}
-        temp = temp->next;*/
-	/*printf("type: %s \n", temp->sign.car);
-   }
-return 0;*/
+	return 1;
 }
 
 /* 
@@ -71,7 +107,7 @@ char check[100];
 
 int i = 0;
 int count = 1;
-if(pre_mila->first_register || pre_mila->operation > LEA){
+if(pre_mila->first_register || pre_mila->operation > LEA){\
 	if(pre_mila->second_register){
 		return 0;
 	}
@@ -127,6 +163,8 @@ if(isalpha(check[i]) || isdigit(check[i])){
 			}else if(count == 2){
 				return count;
 			}
+		}else{
+			
 		}
 		i++;	
 		continue;
@@ -422,7 +460,7 @@ while(*ptr != '\0'){
 	if(isspace(*ptr)){
 		if(check == 1){/*corrupted patameter (has a space between data)*/
 			break;
-		}
+		} 
 	i++;
 	ptr++;
 	continue;
@@ -434,7 +472,7 @@ while(*ptr != '\0'){
 	if(*ptr == '-'){
 		if(check == 0 && negative == 0){
 			negative = 1;
-			check == 1;
+			check = 1;
 			ptr++;
 			i++;
 			continue;
@@ -529,7 +567,7 @@ printf("c: %c\n", *ptr);
 			if(i2 == -1){/*no number*/
 				printf("\ngot a corrupted shit parameter skip to next mila\n");
 			}else{
-				ptr+i2;/*skip the chars that we read in getNumber fucntion*/
+				ptr = ptr + i2;/*skip the chars that we read in getNumber fucntion*/
 				if(gotParameter){
 					strcpy(myMila->destinationMiun, "00");
 					myPreMila->param2_miun = MIUN0;/*MIUN1*/
@@ -537,9 +575,9 @@ printf("c: %c\n", *ptr);
 					strcpy(myMila->sourceMiun, "00");
 					myPreMila->param1_miun = MIUN0;
 				}
-				while(*ptr2 != COMMA && *ptr2 != '\0'){
+				while(*ptr != COMMA && *ptr != '\0'){
 					ptr++;
-				}			
+				}		
 			}
 		}
 		if(*ptr == '&'){/*this parameter has miun 2 value*/
