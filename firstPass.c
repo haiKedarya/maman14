@@ -1,10 +1,9 @@
 #include "words.h"
 #include "firstPass.h"
 
-int flagForError = 0;
 myRegister registers[8];
 
-void firstParse(FILE * fp)
+void firstParse(FILE * fp, char *fileName)
 {
 ehead = (EntryNode *) malloc(sizeof(EntryNode));
 curENode = ehead;
@@ -21,7 +20,6 @@ char * line = NULL;
 size_t len = 0;
 ssize_t read;
 int insertCode=0;
-int flagForError = 0;
 int place=0;
 char * ptr;
 int labelFlag;
@@ -49,7 +47,7 @@ while(1){ /*THE SCAN LOOP*/
 if(*ptr == '\0'){ 	
 	break; 
 }
-
+puts(ptr);
 if(*ptr == ':')
 { 
 	labelFlag = checkForLabel(line);/*equal 1 if there is label, 0 if not*/	
@@ -81,7 +79,7 @@ switch(checkForGuide(line,place)){
 		pre_Mila.hasGuide = 2;
 		ptr += addString(line,place);
 			if(labelFlag){
-			addSign(label, "data", IC);
+			addSign(label, "string", IC);
 			}
 		}
 	break;
@@ -108,10 +106,9 @@ if(!functLabel){
 	if(isalpha(*ptr)){
 
 		functLabel = checkFunct(ptr,&pre_Mila);/*will return the funct number 1-16 if found any*/	
-		/*printf("\nthis is functLabel: %d\n", functLabel);*/
 		if(functLabel > 0){
 		ptr+=3;
-		makepOpCodeAndFunct(functLabel-1, &lineMila);
+		makepOpCodeAndFunct(functLabel, &lineMila);
 		}
 	}
 }
@@ -143,24 +140,20 @@ printf("functLabel : %d\n",functLabel);
 				checkIfParamIsLabel(&pre_Mila, &lineMila);
 			}
 			break;		
-	
 	}
 
 }
-
 /*moving ptr to next char in line*/
 place++;
 ptr++;
-
 }	
-
-printMila(&pre_Mila,&lineMila);
-
+if(functLabel > 0){
+	printMila(&pre_Mila,&lineMila);
+}
 printf("ic: %d\n",IC);
 place = 0;
 IC++;
 /*moving to next line IC grow by 1*/
-
 }
 }
 /*=================================================*/
@@ -360,14 +353,14 @@ i++;
 len++;
 
 }
-
+makeBinary(0, 24);
 i++;
 arr24[i] = '\0';
 i++;
 
 DC += len + 1;
 printf("dc:%d\n",DC);
-return i2;;
+return i2;
 
 }
 
@@ -385,7 +378,7 @@ int len = 0;
 int send = 0;
 char arrNumer[100];
 p = line;
-int itsNeg=0;
+bool itsNeg=0;
 
 
 while(*p<48 || *p>57 )
@@ -440,20 +433,28 @@ return i2;
  * @return the funct number 1-16 or 0 if not fount, in case we searched to whole line and did not found any funct name will return -1;
  */
 int checkFunct(char * line, preMila *pre_mila){
-char ops [16][4]={"mov","cmp","add", "sub", "lea","clr", "not", "inc", "dec", "jmp", "bne", "jsr", "red", "prn", "rts", "stop"}; 
-char s[3];
+char ops [16][5]={"mov","cmp","add", "sub", "lea","clr", "not", "inc", "dec", "jmp", "bne", "jsr", "red", "prn", "rts", "stop"}; 
+char s[4];
 int i;
 if(*(line +1)== '\0'){
 return -1;}
 if(*(line +2) == '\0'){  
 return -1;}
+
 s[0] = *line;
 s[1] = *(line +1);
 s[2] = *(line +2);
+if(*(line +3) != '\0'){
+s[3] = *(line +3);
+	if(!strcmp(s, ops[STOP])){/*check if its stop*/
+		pre_mila->operation = STOP;
+	return STOP;
+	}
+}
 for(i = 0;i<16;i++){
 	if(strcmp(s, ops[i]) == 0){
 	pre_mila->operation = i;
-	return i+1;
+	return i;
 	}
 }
 return 0;
