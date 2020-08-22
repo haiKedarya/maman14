@@ -64,15 +64,19 @@ typedef struct {
     char label[50];
 }Entry;
 
+typedef struct {
+    char label[50];
+}Extern;
+
    typedef struct {
     Entry entry;
     struct EntryNode * next;
 }EntryNode;
 
-EntryNode * ehead ;
+EntryNode * ehead;
 EntryNode * curENode;
 /*==========================*/
-   
+ 
 typedef struct {
     char label[50];
     int value;
